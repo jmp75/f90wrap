@@ -29,6 +29,7 @@ from f90wrap.transform import ArrayDimensionConverter
 from f90wrap import fortran as ft
 from f90wrap import codegen as cg
 
+from pprint import pprint
 
 def py_arg_value(arg):
     # made global from PythonWrapperGenerator.visit_Procedure so that other functions can use it
@@ -455,7 +456,11 @@ except ValueError:
         for proc in node.procedures:
             proc_name = ''
             if not self.make_package:
-                proc_name += normalise_class_name(proc.mod_name, self.class_names) + '.'
+                # Try to work around https://github.com/jameskermode/f90wrap/issues/98
+                if hasattr(proc, 'mod_name'):
+                    proc_name += normalise_class_name(proc.mod_name, self.class_names) + '.'
+                else:
+                    pprint(vars(proc))
             elif cls_name is not None:
                 proc_name += cls_name + '.'
             if hasattr(proc, 'method_name'):
